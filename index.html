@@ -2,24 +2,222 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
     <title>Регистрация на мероприятие</title>
 
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding:
+                calc(24px + env(safe-area-inset-top))
+                16px
+                calc(24px + env(safe-area-inset-bottom));
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #1d1d1f;
+            background: #f2f3f5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+            line-height: 1.2;
+        }
+
+        .header p {
+            margin: 0;
+            color: #6d7885;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .form-card {
+            padding: 20px;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .field input {
+            width: 100%;
+            height: 48px;
+            padding: 0 14px;
+            border: 1px solid #dce1e6;
+            border-radius: 12px;
+            outline: none;
+            background: #f7f8fa;
+            color: #1d1d1f;
+            font: inherit;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .field input:focus {
+            border-color: #447bba;
+            background: #ffffff;
+        }
+
+        .field input::placeholder {
+            color: #99a2ad;
+        }
+
+        .submit-button {
+            width: 100%;
+            height: 50px;
+            margin-top: 4px;
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            background: #447bba;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .submit-button:hover {
+            background: #3b6fa9;
+        }
+
+        .submit-button:active {
+            transform: scale(0.98);
+        }
+
+        .message {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            color: #268244;
+            background: #e8f5eb;
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .message.visible {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Регистрация на мероприятие</h1>
-    <p>Приложение работает!</p>
+    <main class="container">
+        <header class="header">
+            <h1>Регистрация участника</h1>
+            <p>Заполните данные для участия в мероприятии</p>
+        </header>
+
+        <form class="form-card" id="registration-form">
+            <div class="field">
+                <label for="full-name">Имя и фамилия</label>
+                <input
+                    id="full-name"
+                    name="fullName"
+                    type="text"
+                    placeholder="Например, Анна Иванова"
+                    autocomplete="name"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="phone">Телефон</label>
+                <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+7 999 123-45-67"
+                    autocomplete="tel"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="email">Электронная почта</label>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="example@mail.ru"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="organization">Организация</label>
+                <input
+                    id="organization"
+                    name="organization"
+                    type="text"
+                    placeholder="Название организации"
+                    autocomplete="organization"
+                >
+            </div>
+
+            <button class="submit-button" type="submit">
+                Зарегистрироваться
+            </button>
+
+            <div class="message" id="success-message">
+                Интерфейс работает. Данные пока никуда не отправляются.
+            </div>
+        </form>
+    </main>
 
     <script>
-        vkBridge.send('VKWebAppInit')
+        vkBridge.send("VKWebAppInit")
             .then(() => {
-                console.log('VK Mini App инициализирован');
+                console.log("VK Mini App инициализирован");
             })
             .catch((error) => {
-                console.error('Ошибка инициализации VK:', error);
+                console.error("Ошибка инициализации VK:", error);
             });
+
+        const form = document.getElementById("registration-form");
+        const successMessage = document.getElementById("success-message");
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            successMessage.classList.add("visible");
+        });
+
+        form.addEventListener("input", () => {
+            successMessage.classList.remove("visible");
+        });
     </script>
 </body>
 </html>

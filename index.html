@@ -29,7 +29,6 @@
         body {
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
         .form-frame {
@@ -44,8 +43,8 @@
 
 <body>
     <iframe
+        id="registration-form"
         class="form-frame"
-        src="https://forms.yandex.ru/u/6a907f06e010db47da86dd3e/?iframe=1&theme=light"
         title="Регистрация участников"
         frameborder="0"
     ></iframe>
@@ -58,6 +57,33 @@
             .catch((error) => {
                 console.error("Ошибка инициализации VK:", error);
             });
+
+        const randomBytes = new Uint8Array(8);
+        crypto.getRandomValues(randomBytes);
+
+        const randomPart = Array.from(randomBytes)
+            .map(byte => byte.toString(16).padStart(2, "0"))
+            .join("")
+            .toUpperCase();
+
+        const participantId =
+            "OUS-" +
+            Date.now().toString(36).toUpperCase() +
+            "-" +
+            randomPart;
+
+        localStorage.setItem("participantId", participantId);
+
+        const formUrl = new URL(
+            "https://forms.yandex.ru/u/6a907f06e010db47da86dd3e/"
+        );
+
+        formUrl.searchParams.set("iframe", "1");
+        formUrl.searchParams.set("theme", "light");
+        formUrl.searchParams.set("participant_id", participantId);
+
+        document.getElementById("registration-form").src =
+            formUrl.toString();
     </script>
 </body>
 </html>

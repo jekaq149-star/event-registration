@@ -2,12 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
-    <title>Регистрация участника</title>
+    <title>Регистрация участников</title>
 
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 
@@ -16,179 +17,38 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
+            width: 100%;
+            height: 100%;
             margin: 0;
-            min-height: 100vh;
-            padding:
-                calc(24px + env(safe-area-inset-top))
-                16px
-                calc(24px + env(safe-area-inset-bottom));
-
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            color: #1d1d1f;
+            overflow: hidden;
             background: #f2f3f5;
         }
 
-        .container {
-            width: 100%;
-            max-width: 520px;
-            margin: 0 auto;
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        .header {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            margin: 0 0 8px;
-            font-size: 26px;
-            line-height: 1.2;
-        }
-
-        .header p {
-            margin: 0;
-            color: #6d7885;
-            font-size: 15px;
-            line-height: 1.4;
-        }
-
-        .form-card {
-            padding: 20px;
-            border-radius: 18px;
-            background: #ffffff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-        }
-
-        .field {
-            margin-bottom: 16px;
-        }
-
-        .field label {
+        .form-frame {
             display: block;
-            margin-bottom: 7px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .field input {
             width: 100%;
-            height: 48px;
-            padding: 0 14px;
-            border: 1px solid #dce1e6;
-            border-radius: 12px;
-            outline: none;
-            background: #f7f8fa;
-            color: #1d1d1f;
-            font: inherit;
-        }
-
-        .field input:focus {
-            border-color: #447bba;
+            height: 100%;
+            border: 0;
             background: #ffffff;
-        }
-
-        .field input::placeholder {
-            color: #99a2ad;
-        }
-
-        .submit-button {
-            width: 100%;
-            height: 50px;
-            margin-top: 4px;
-            border: none;
-            border-radius: 12px;
-            color: #ffffff;
-            background: #447bba;
-            font: inherit;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .submit-button:active {
-            transform: scale(0.98);
-        }
-
-        .message {
-            display: none;
-            margin-top: 16px;
-            padding: 12px;
-            border-radius: 12px;
-            color: #268244;
-            background: #e8f5eb;
-            font-size: 14px;
-            line-height: 1.4;
-            text-align: center;
-        }
-
-        .message.visible {
-            display: block;
         }
     </style>
 </head>
 
 <body>
-    <main class="container">
-        <header class="header">
-            <h1>Регистрация участника</h1>
-            <p>Заполните данные для участия в мероприятии</p>
-        </header>
-
-        <form class="form-card" id="registration-form">
-            <div class="field">
-                <label for="full-name">ФИО</label>
-                <input
-                    id="full-name"
-                    name="fullName"
-                    type="text"
-                    placeholder="Иванов Иван Иванович"
-                    autocomplete="name"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label for="school">Школа</label>
-                <input
-                    id="school"
-                    name="school"
-                    type="text"
-                    placeholder="Например, школа № 15"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label for="class">Класс</label>
-                <input
-                    id="class"
-                    name="className"
-                    type="text"
-                    placeholder="Например, 9А"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label for="position">Должность в школьном ОУС</label>
-                <input
-                    id="position"
-                    name="position"
-                    type="text"
-                    placeholder="Например, председатель"
-                    required
-                >
-            </div>
-
-            <button class="submit-button" type="submit">
-                Зарегистрироваться
-            </button>
-
-            <div class="message" id="success-message">
-                Форма заполнена. Данные пока никуда не отправляются.
-            </div>
-        </form>
-    </main>
+    <iframe
+        class="form-frame"
+        src="https://forms.yandex.ru/u/6a907f06e010db47da86dd3e/?iframe=1&theme=light"
+        title="Регистрация участников"
+        frameborder="0"
+    ></iframe>
 
     <script>
         vkBridge.send("VKWebAppInit")
@@ -198,18 +58,6 @@
             .catch((error) => {
                 console.error("Ошибка инициализации VK:", error);
             });
-
-        const form = document.getElementById("registration-form");
-        const successMessage = document.getElementById("success-message");
-
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            successMessage.classList.add("visible");
-        });
-
-        form.addEventListener("input", () => {
-            successMessage.classList.remove("visible");
-        });
     </script>
 </body>
 </html>

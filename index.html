@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
-    <title>Регистрация участников</title>
+    <title>Регистрация участника</title>
 
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -23,57 +23,74 @@
             width: 100%;
             height: 100%;
             margin: 0;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f2f3f5;
         }
 
         body {
+            padding:
+                env(safe-area-inset-top)
+                env(safe-area-inset-right)
+                env(safe-area-inset-bottom)
+                env(safe-area-inset-left);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #1d1d1f;
+            background: #f2f3f5;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 580px;
+            height: 100%;
+
             display: flex;
             flex-direction: column;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .header {
+            position: relative;
+            z-index: 2;
+            padding: 20px 20px 16px;
+            text-align: center;
+            background: #ffffff;
+            border-bottom: 1px solid #e7e8ec;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+            font-size: 24px;
+            line-height: 1.2;
+        }
+
+        .header p {
+            margin: 0;
+            color: #6d7885;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .form-container {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            background: #ffffff;
         }
 
         .form-frame {
             display: block;
             width: 100%;
-            flex: 1;
-            min-height: 0;
+            height: 100%;
             border: 0;
             background: #ffffff;
         }
 
-        .qr-panel {
-            padding: 10px 16px;
-            background: #ffffff;
-            border-top: 1px solid #dce1e6;
-        }
-
-        .qr-hint {
-            margin: 0 0 8px;
-            color: #6d7885;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        .qr-button {
-            width: 100%;
-            height: 48px;
-            border: 0;
-            border-radius: 12px;
-            color: #ffffff;
-            background: #447bba;
-            font: inherit;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .qr-button:active {
-            transform: scale(0.98);
-        }
-
-        .modal {
+        .success-page {
             position: fixed;
             inset: 0;
             z-index: 1000;
@@ -82,44 +99,32 @@
             align-items: center;
             justify-content: center;
 
-            padding: 16px;
-            background: rgba(0, 0, 0, 0.55);
+            padding:
+                calc(24px + env(safe-area-inset-top))
+                16px
+                calc(24px + env(safe-area-inset-bottom));
+
+            background: #f2f3f5;
         }
 
-        .modal.visible {
+        .success-page.visible {
             display: flex;
         }
 
-        .qr-card {
-            position: relative;
+        .success-card {
             width: 100%;
-            max-width: 400px;
-            padding: 24px;
-            border-radius: 20px;
+            max-width: 420px;
+            padding: 26px;
+            border-radius: 22px;
             background: #ffffff;
             text-align: center;
-        }
-
-        .close-button {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-
-            width: 36px;
-            height: 36px;
-            border: 0;
-            border-radius: 50%;
-
-            color: #6d7885;
-            background: #f2f3f5;
-            font-size: 24px;
-            cursor: pointer;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
         }
 
         .success-icon {
-            width: 54px;
-            height: 54px;
-            margin: 0 auto 14px;
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 16px;
             border-radius: 50%;
 
             display: flex;
@@ -128,17 +133,17 @@
 
             color: #ffffff;
             background: #268244;
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 700;
         }
 
-        h1 {
-            margin: 0 0 8px;
-            font-size: 23px;
+        .success-card h2 {
+            margin: 0 0 10px;
+            font-size: 24px;
         }
 
-        .description {
-            margin: 0 0 18px;
+        .success-description {
+            margin: 0 0 20px;
             color: #6d7885;
             font-size: 14px;
             line-height: 1.5;
@@ -147,7 +152,7 @@
         #qrcode {
             width: 256px;
             min-height: 256px;
-            margin: 0 auto 16px;
+            margin: 0 auto 18px;
             padding: 8px;
             background: #ffffff;
         }
@@ -175,43 +180,45 @@
             font-size: 13px;
             font-weight: 600;
         }
+
+        @media (min-width: 700px) {
+            body {
+                padding: 24px;
+            }
+
+            .app {
+                height: min(820px, 100%);
+                border-radius: 22px;
+                box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+            }
+        }
     </style>
 </head>
 
 <body>
-    <iframe
-        id="registration-form"
-        class="form-frame"
-        title="Регистрация участников"
-        frameborder="0"
-    ></iframe>
+    <main class="app" id="app">
+        <header class="header">
+            <h1>Регистрация участника</h1>
+            <p>Заполните данные для участия в мероприятии</p>
+        </header>
 
-    <section class="qr-panel">
-        <p class="qr-hint">
-            Сначала отправьте заполненную форму
-        </p>
+        <div class="form-container">
+            <iframe
+                id="registration-form"
+                class="form-frame"
+                title="Регистрация участника"
+                frameborder="0"
+            ></iframe>
+        </div>
+    </main>
 
-        <button class="qr-button" id="show-qr" type="button">
-            Показать мой QR-код
-        </button>
-    </section>
-
-    <div class="modal" id="qr-modal">
-        <div class="qr-card">
-            <button
-                class="close-button"
-                id="close-qr"
-                type="button"
-                aria-label="Закрыть"
-            >
-                ×
-            </button>
-
+    <section class="success-page" id="success-page">
+        <div class="success-card">
             <div class="success-icon">✓</div>
 
-            <h1>Регистрация завершена</h1>
+            <h2>Регистрация завершена</h2>
 
-            <p class="description">
+            <p class="success-description">
                 Сохраните QR-код и покажите его при входе на мероприятие.
             </p>
 
@@ -220,7 +227,7 @@
             <div class="participant-label">ID участника</div>
             <div class="participant-id" id="participant-id"></div>
         </div>
-    </div>
+    </section>
 
     <script>
         vkBridge.send("VKWebAppInit").catch(() => {});
@@ -247,21 +254,29 @@
         formUrl.searchParams.set("theme", "light");
         formUrl.searchParams.set("participant_id", participantId);
 
-        document.getElementById("registration-form").src =
-            formUrl.toString();
+        const formFrame =
+            document.getElementById("registration-form");
 
-        const modal = document.getElementById("qr-modal");
-        const qrContainer = document.getElementById("qrcode");
-        const participantIdElement =
-            document.getElementById("participant-id");
-
+        let firstLoadCompleted = false;
         let qrCreated = false;
 
-        document.getElementById("show-qr").addEventListener("click", () => {
-            participantIdElement.textContent = participantId;
+        formFrame.addEventListener("load", () => {
+            if (!firstLoadCompleted) {
+                firstLoadCompleted = true;
+                return;
+            }
 
+            showSuccessPage();
+        });
+
+        formFrame.src = formUrl.toString();
+
+        function showSuccessPage() {
             if (!qrCreated) {
-                new QRCode(qrContainer, {
+                document.getElementById("participant-id").textContent =
+                    participantId;
+
+                new QRCode(document.getElementById("qrcode"), {
                     text: participantId,
                     width: 240,
                     height: 240,
@@ -273,18 +288,9 @@
                 qrCreated = true;
             }
 
-            modal.classList.add("visible");
-        });
-
-        document.getElementById("close-qr").addEventListener("click", () => {
-            modal.classList.remove("visible");
-        });
-
-        modal.addEventListener("click", (event) => {
-            if (event.target === modal) {
-                modal.classList.remove("visible");
-            }
-        });
+            document.getElementById("success-page")
+                .classList.add("visible");
+        }
     </script>
 </body>
 </html>

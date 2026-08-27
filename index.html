@@ -11,6 +11,7 @@
     <title>Регистрация участников</title>
 
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         * {
@@ -23,10 +24,13 @@
             height: 100%;
             margin: 0;
             overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: #f2f3f5;
         }
 
         body {
+            display: flex;
+            flex-direction: column;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -34,9 +38,142 @@
         .form-frame {
             display: block;
             width: 100%;
-            height: 100%;
+            flex: 1;
+            min-height: 0;
             border: 0;
             background: #ffffff;
+        }
+
+        .qr-panel {
+            padding: 10px 16px;
+            background: #ffffff;
+            border-top: 1px solid #dce1e6;
+        }
+
+        .qr-hint {
+            margin: 0 0 8px;
+            color: #6d7885;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .qr-button {
+            width: 100%;
+            height: 48px;
+            border: 0;
+            border-radius: 12px;
+            color: #ffffff;
+            background: #447bba;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .qr-button:active {
+            transform: scale(0.98);
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .modal.visible {
+            display: flex;
+        }
+
+        .qr-card {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            border-radius: 20px;
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 50%;
+
+            color: #6d7885;
+            background: #f2f3f5;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .success-icon {
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #ffffff;
+            background: #268244;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 23px;
+        }
+
+        .description {
+            margin: 0 0 18px;
+            color: #6d7885;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #qrcode {
+            width: 256px;
+            min-height: 256px;
+            margin: 0 auto 16px;
+            padding: 8px;
+            background: #ffffff;
+        }
+
+        #qrcode img,
+        #qrcode canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: auto;
+        }
+
+        .participant-label {
+            margin-bottom: 6px;
+            color: #818c99;
+            font-size: 13px;
+        }
+
+        .participant-id {
+            padding: 10px;
+            border-radius: 10px;
+            overflow-wrap: anywhere;
+            color: #447bba;
+            background: #f2f6fa;
+            font-size: 13px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -49,14 +186,44 @@
         frameborder="0"
     ></iframe>
 
+    <section class="qr-panel">
+        <p class="qr-hint">
+            Сначала отправьте заполненную форму
+        </p>
+
+        <button class="qr-button" id="show-qr" type="button">
+            Показать мой QR-код
+        </button>
+    </section>
+
+    <div class="modal" id="qr-modal">
+        <div class="qr-card">
+            <button
+                class="close-button"
+                id="close-qr"
+                type="button"
+                aria-label="Закрыть"
+            >
+                ×
+            </button>
+
+            <div class="success-icon">✓</div>
+
+            <h1>Регистрация завершена</h1>
+
+            <p class="description">
+                Сохраните QR-код и покажите его при входе на мероприятие.
+            </p>
+
+            <div id="qrcode"></div>
+
+            <div class="participant-label">ID участника</div>
+            <div class="participant-id" id="participant-id"></div>
+        </div>
+    </div>
+
     <script>
-        vkBridge.send("VKWebAppInit")
-            .then(() => {
-                console.log("VK Mini App инициализирован");
-            })
-            .catch((error) => {
-                console.error("Ошибка инициализации VK:", error);
-            });
+        vkBridge.send("VKWebAppInit").catch(() => {});
 
         const randomBytes = new Uint8Array(8);
         crypto.getRandomValues(randomBytes);
@@ -72,8 +239,6 @@
             "-" +
             randomPart;
 
-        localStorage.setItem("participantId", participantId);
-
         const formUrl = new URL(
             "https://forms.yandex.ru/u/6a907f06e010db47da86dd3e/"
         );
@@ -84,6 +249,42 @@
 
         document.getElementById("registration-form").src =
             formUrl.toString();
+
+        const modal = document.getElementById("qr-modal");
+        const qrContainer = document.getElementById("qrcode");
+        const participantIdElement =
+            document.getElementById("participant-id");
+
+        let qrCreated = false;
+
+        document.getElementById("show-qr").addEventListener("click", () => {
+            participantIdElement.textContent = participantId;
+
+            if (!qrCreated) {
+                new QRCode(qrContainer, {
+                    text: participantId,
+                    width: 240,
+                    height: 240,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                qrCreated = true;
+            }
+
+            modal.classList.add("visible");
+        });
+
+        document.getElementById("close-qr").addEventListener("click", () => {
+            modal.classList.remove("visible");
+        });
+
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.classList.remove("visible");
+            }
+        });
     </script>
 </body>
 </html>

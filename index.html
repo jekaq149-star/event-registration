@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
-    <title>Регистрация на мероприятие</title>
+    <title>Регистрация участника</title>
 
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 
@@ -81,7 +81,6 @@
             background: #f7f8fa;
             color: #1d1d1f;
             font: inherit;
-            transition: border-color 0.2s, background-color 0.2s;
         }
 
         .field input:focus {
@@ -104,11 +103,6 @@
             font: inherit;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-
-        .submit-button:hover {
-            background: #3b6fa9;
         }
 
         .submit-button:active {
@@ -142,49 +136,47 @@
 
         <form class="form-card" id="registration-form">
             <div class="field">
-                <label for="full-name">Имя и фамилия</label>
+                <label for="full-name">ФИО</label>
                 <input
                     id="full-name"
                     name="fullName"
                     type="text"
-                    placeholder="Например, Анна Иванова"
+                    placeholder="Иванов Иван Иванович"
                     autocomplete="name"
                     required
                 >
             </div>
 
             <div class="field">
-                <label for="phone">Телефон</label>
+                <label for="school">Школа</label>
                 <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="+7 999 123-45-67"
-                    autocomplete="tel"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label for="email">Электронная почта</label>
-                <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="example@mail.ru"
-                    autocomplete="email"
-                    required
-                >
-            </div>
-
-            <div class="field">
-                <label for="organization">Организация</label>
-                <input
-                    id="organization"
-                    name="organization"
+                    id="school"
+                    name="school"
                     type="text"
-                    placeholder="Название организации"
-                    autocomplete="organization"
+                    placeholder="Например, школа № 15"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="class">Класс</label>
+                <input
+                    id="class"
+                    name="className"
+                    type="text"
+                    placeholder="Например, 9А"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="position">Должность Школьного ОУС</label>
+                <input
+                    id="position"
+                    name="position"
+                    type="text"
+                    placeholder="Например, председатель"
+                    required
                 >
             </div>
 
@@ -193,7 +185,7 @@
             </button>
 
             <div class="message" id="success-message">
-                Интерфейс работает. Данные пока никуда не отправляются.
+                Форма заполнена. Данные пока никуда не отправляются.
             </div>
         </form>
     </main>
